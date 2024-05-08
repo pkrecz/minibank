@@ -1,0 +1,53 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div>
+
+<div class="heading">
+
+  <h2>Update account type</h2>
+
+  <form action="{% url 'minibankapp:listaccounttype' %}">
+    <input type="text" placeholder="Account type" name="criteria" style="margin-top: 5px;">
+      <button type="submit" class="btn">Search</button>
+    </input>
+  </form>
+
+</div>
+
+<div class="outer-wrapper">
+
+<div class="table-wrapper"> 
+    <table class="cstable">
+          <thead>
+            <tr>
+                <th scope="all"> *** Action ***</th>
+                <th scope="all">Id account type</th>
+                <th scope="all">Description</th>
+                <th scope="all">Subaccount</th>
+                <th scope="all">Percent</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for accounttype in object_list %}
+            <tr>
+                <td>
+                  <a href="/minibank/updateaccounttype/{{ accounttype.Id_account_type }}/"><button role="link" class="btn_inside_table">Update</button></a>
+                  <a href="/minibank/deleteaccounttype/{{ accounttype.Id_account_type }}/"><button role="link" class="btn_inside_table">Delete</button></a>                
+                </td>
+                <td>{{ accounttype.Id_account_type }}</td>
+                <td>{{ accounttype.Description }}</td>
+                <td>{{ accounttype.Subaccount }}</td>
+                <td>{{ accounttype.Percent }}</td>
+            </tr>
+            {% endfor %}
+ 
+          </tbody>
+
+      </table>
+</div>
+</div>
+</div>
+
+{% endblock %}

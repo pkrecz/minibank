@@ -1,0 +1,83 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div>
+
+<div class="heading">
+
+  <h2>Update customer data</h2>
+
+  <form action="{% url 'minibankapp:listcustomer' %}" style="display: inline-block;">
+    <input type="text" placeholder="PESEL or Identification" name="criteria" style="margin-top: 5px;">
+      <button type="submit" class="btn">Search</button>
+    </input>
+  </form>
+
+  {% if is_paginated %}
+    <div style="float: right;">
+        <span>
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}"><button class="btn btn_page">&laquo; Previous</button></a>
+            {% endif %}
+                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span> 
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"><button class="btn btn_page">Next &raquo;</button></a>
+            {% endif %}
+        </span>
+    </div>
+  {% endif %}
+
+</div>
+
+<div class="outer-wrapper">
+
+<div class="table-wrapper"> 
+    <table class="cstable">
+          <thead>
+            <tr>
+                <th scope="all"> *** Action ***</th>
+                <th scope="all">Id customer</th>
+                <th scope="all">First name</th>
+                <th scope="all">Last name</th>
+                <th scope="all">Address</th>
+                <th scope="all">Postal code</th>
+                <th scope="all">City</th>
+                <th scope="all">PESEL</th>
+                <th scope="all">Birth date</th>
+                <th scope="all">Birth city</th>
+                <th scope="all">Identification</th>
+                <th scope="all">Created date</th>
+                <th scope="all">Created by</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for customer in object_list %}
+            <tr onclick='location.href="/minibank/updatecustomer/{{ customer.Id_customer }}/"'>
+                <td>
+                  <a href="/minibank/updatecustomer/{{ customer.Id_customer }}/"><button role="link" class="btn_inside_table">Update</button></a>
+                  <a href="/minibank/deletecustomer/{{ customer.Id_customer }}/"><button role="link" class="btn_inside_table">Delete</button></a>                
+                </td>
+                <td>{{ customer.Id_customer }}</td>
+                <td>{{ customer.First_name }}</td>
+                <td>{{ customer.Last_name }}</td>
+                <td>{{ customer.Address }}</td>
+                <td>{{ customer.Postal_code }}</td>
+                <td>{{ customer.City }}</td>
+                <td>{{ customer.Pesel }}</td>
+                <td>{{ customer.Birth_date }}</td>
+                <td>{{ customer.Birth_city }}</td>
+                <td>{{ customer.Identification }}</td>
+                <td>{{ customer.Created_date }}</td>
+                <td>{{ customer.Created_employee }}</td>
+            </tr>
+            {% endfor %}
+ 
+          </tbody>
+
+      </table>
+</div>
+</div>
+</div>
+
+{% endblock %}

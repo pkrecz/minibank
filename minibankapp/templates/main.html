@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initialscale=1">
+	<title>miniBank</title>
+	<link href="{% static 'css/main.css' %}" rel="stylesheet">
+</head>
+
+<body>
+
+<header>
+
+  <div class="logo"><a>miniBank</a></div>
+
+  
+  <div class="menu">
+  {% if request.user.is_authenticated %}
+    
+    <ul>
+
+      <li><a href="{% url 'minibankapp:dashboard' %}">Dashboard</a></li>
+
+      <li><a>Customer</a>
+        <ul>
+          <li><a href="{% url 'minibankapp:newcustomer' %}">New customer</a></li>
+          <li><a href="{% url 'minibankapp:listcustomer' %}">Update customer</a></li>
+	      </ul>
+      </li>
+
+      <li><a>Operation</a>
+        <ul>
+          <li><a href="{% url 'minibankapp:selectcustomer_operation' %}">Deposit / Withdrawal</a></li>
+          <li><a href="{% url 'minibankapp:selectcustomer_history' %}">History operation</a></li>
+        </ul>
+      </li>  
+
+
+      <li><a>Account</a>
+        <ul>
+          <li><a href="{% url 'minibankapp:selectcustomer_account' %}">New / Update account</a></li>
+        </ul>
+      </li>
+
+      {% if perms.minibankapp.extended_role %}
+
+      <li><a>Administration</a>
+        <ul>
+          <li><a href="{% url 'minibankapp:newaccounttype' %}">New account type</a></li>
+          <li><a href="{% url 'minibankapp:listaccounttype' %}">Update account type</a></li>
+          <li><a href="{% url 'minibankapp:updateparameter' %}">System data</a></li>
+        </ul>
+      </li>
+      
+      {% endif %}
+      
+    </ul>
+    
+  {% endif %}
+  </div>
+  
+
+  <div class="user">
+    {% if request.user.is_authenticated %}
+
+    <form method="post" action="{% url 'minibankapp:logout' %}" style="display: inline">
+      {% csrf_token %}
+      Logged in as <b>{{ request.user.first_name|default:request.user.username }}</b>
+      <button type="submit" class="btn_header">LogOut</button>
+    </form>
+
+    <form method="get" action="{% url 'minibankapp:password_change' %}" style="display: inline">
+        {% csrf_token %}
+        <button type="submit" class="btn_header">Change password</button>
+    </form>
+
+  {% else %}
+
+    <form method="get" action="{% url 'minibankapp:login' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn_header">LogIn</button>
+    </form>
+
+  {% endif %} 
+    
+  </div>
+
+</header>
+
+<main>
+  {% block content %}
+  {% endblock %}
+</main>
+
+<footer>
+	<span style="float:left">Portfolio - web aplication miniBank</span>
+  <span style="float:right">Designed by: Piotr Kreczman</span>
+</footer>
+
+</body>
+
+</html>

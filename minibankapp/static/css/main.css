@@ -1,0 +1,375 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Poppins');
+@import url('https://fonts.googleapis.com/css2?family=Aleo:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Alegreya&subset=latin,latin-ext');
+@import url('https://fonts.googleapis.com/css?family=Alice&subset=latin,latin-ext');
+@import url('https://fonts.googleapis.com/css?family=Chivo&subset=latin,latin-ext');
+@import url('https://fonts.googleapis.com/css?family=Poly');
+
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Aleo', serif;
+}
+
+/* Settings for body */
+body {
+    font-family: 'Aleo', serif;
+    font-weight: 400;
+    font-size: 15px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Settings for header */
+header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #00CED1; /* Dark Turquoise */
+    padding: 16px 20px; 
+    column-gap: 20px;
+}
+
+/* Settings for main */
+main {
+    width: auto;
+    background-color: #F5F5DC; /* Beige */
+    padding: 20px 40px;
+    height: 100%;
+    overflow: auto;
+}
+
+/* Settings for footer */
+footer {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 17px;
+    background-color: #00CED1; /* Dark Turquoise */
+}
+
+li, a {
+    color: black;
+    text-decoration: none;
+}
+
+
+h1 {
+    border-bottom: 1px solid #A9A9A9; /* Dark Gray */
+    padding-bottom: 10px;
+    margin: 10px 0 20px 0;
+}
+
+h2 {
+    border-bottom: 1px solid #A9A9A9; /* Dark Gray */
+    padding-bottom: 10px;
+    margin: 10px 0 20px 0;
+}
+
+p {
+    padding: 10px 0px;    
+}
+
+label {
+    float: left;
+    clear: both;
+    color: #333333; /* Light black */
+    padding: 2px 0px;
+}
+
+/* Showing errors */
+.errorlist,
+.errorlist li {
+   color:  	#FF0000; /* Red */
+   font-weight: 500;
+   padding: 2px 0px;
+}
+
+ul.errorlist + input,
+ul.errorlist + p input,
+ul.errorlist + p textarea,
+ul.errorlist + p select {
+    border: 1px solid #FF0000; /* Red */
+}
+
+.errorfield {
+    border: 1px solid #FF0000; /* Red */
+}
+
+/* Settings for customized templates */
+.custom_template > ul > li {
+    display: inline-block;
+    padding: 5px 0px;
+}
+
+/* Class menu */
+.menu {
+    position: relative;
+}
+
+.menu > ul > li {
+    display: inline-block;
+    padding: 0px 0.3rem; /* distance between buttons */
+}
+
+.menu > ul > li > a { /* button in main menu */
+    padding: 7px 30px;
+    background-color: #5F9EA0; /* Cadet Blue */
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Settings for submenu */
+.menu > ul > li > ul {
+    min-width: 250px;
+    list-style-type: none;
+    text-align: center;
+    text-wrap: nowrap;
+    position: absolute;
+    background-color: #D3D3D3; /* Light Gray */
+    margin-top: 6px; /* position submenu */
+    padding: 0;
+    border-radius: 7px;
+    box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.6);
+    display: none;
+}
+
+.menu > ul > li > ul > li {
+    padding: 0.5rem;
+}
+
+.menu > ul > li > ul > li > a {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+}
+
+.menu > ul > li > ul > li:hover {
+    background-color:#FF00FF; /* Magenta */
+    border-radius: 7px;
+}
+
+/* Hover submenu */
+.menu > ul > li > a:hover + ul,
+.menu > ul > li > ul:hover {
+    display: block;
+}
+
+/* Class logo */
+.logo a {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+/* Class user */
+.user a {
+    font-size: 19px;
+}
+
+/* Template field */
+.template_widget select {
+    background-color: #DCDCDC; /* Gainsboro */
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Settings for forms view */
+input, textarea, .form_widget {
+    clear: both;
+    float: left;
+    margin: 0;
+    background-color: #DCDCDC; /* Gainsboro */
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+input:focus,
+textarea:focus {
+    background-color: #7FFF00; /* Chartreuse like lime */
+    outline: none;
+}
+
+input[type=submit],
+a.button,
+.btn {
+    font-weight: normal;
+    background-color: #1E90FF; /* DodgerBlue */
+    color: #000000; /* Black */
+    padding: 5px;
+    margin: 5px 0px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 5px;
+    min-width: 10rem;
+    border: none;
+}
+
+/* Button class */
+.btn_link {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.btn_header {
+    background-color: #DCDCDC; /* Gainsboro */
+    margin-left: 5px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 5px;
+    font: 13px;
+    font-weight: 500;
+    padding: 5px;
+    min-width: 8rem;
+}
+
+.btn_inside_table {
+    background-color: #C0C0C0; /* Silver */
+    padding: 5px 10px;
+    margin: 0px 5px;
+    border-radius: 5px;
+    border: none;
+}
+
+.btn_extra {
+    background-color: #FFFF00; /* Yellow */
+}
+
+.btn_page {
+    background-color: #FFDAB9; /* PeachPuff */
+}
+
+/* Form */
+form {
+    overflow: auto;
+}
+
+form > p {
+    width: 100%;
+    overflow: auto;
+    padding: 5px 0px;
+}
+
+/* Main settings for custom table */
+.cstable {
+    border-collapse: collapse;
+    border: 1px solid #000000; /* Black */
+}
+
+/* Header of custom table */
+.cstable th {
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    background-color: #C0C0C0; /* Silver */
+    padding: 0.5rem;
+    border: 1px solid #000000; /* Black */
+}
+
+/* Rows in the custom table */ 
+.cstable td {
+    background-color: #DCDCDC; /* Gainsboro */
+    padding: 0.5rem;
+    border: 1px solid #000000; /* Black */
+    text-wrap: nowrap;
+}
+
+.cstable tr:hover > td {
+    background-color: #7FFF00; /* Chartreuse like lime */
+}
+
+.heading {
+    margin-bottom: 20px;
+}
+
+.table-wrapper {
+    overflow-y: scroll;
+    overflow-x: scroll;
+    height: fit-content;
+    max-height: 60vh;
+    margin: 10px;
+}
+
+.outer-wrapper {
+    border: 1px solid #000000; /* Black */
+    border-radius: 2px;
+    max-width: fit-content;
+    max-height: fit-content;
+}
+
+.table-wrapper th::after {
+    content: '';
+    position: absolute;
+    right: 0px;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    width: 100%;
+    border-top: 3px solid;
+    border-bottom: 3px solid;
+    border-color:  #000000; /* Black */
+}
+
+/* Rendering as table */
+.astable {
+    border-width: 0;
+}
+
+.astable ul {
+    list-style-type: none;
+    display: inline-table;
+}
+
+.astable tr th {
+    background-color: transparent;
+    border-width: 0;
+    padding: 5px 0px;
+}
+
+.astable tr td {
+    background-color: transparent;
+    border-width: 0;
+    padding: 5px 0px;
+    
+}
+
+.astable tr td input,
+.astable tr td select {
+    margin-left: 20px;
+    margin-right: 10px;
+    width: 150px;
+}
+
+/* Operation panel */
+.panel {
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.panel thead {
+    background-color: #B0C4DE; /* LightSteelBlue */
+    font-size: 25px;
+}
+
+.panel thead tr th,
+.panel thead tr td {
+    text-align: left;
+    padding: 15px 35px;
+    border: 0px;
+}

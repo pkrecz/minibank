@@ -1,0 +1,31 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div>
+
+  <div class="heading">
+    <h2>New account for customer: {{ pk_customer }}</h2>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <table class="astable">
+      {{ form.as_table }}
+    </table>
+
+    <div class="errorlist">
+      {{ error_message }}
+    </div>
+    
+    <p>
+		  <input type="submit" class="btn" value="Save">
+		  <a href="{{request.META.HTTP_REFERER}}" class="btn btn_link">Back</a>
+	  </p>
+ 
+  </form>
+
+</div>
+
+{% endblock %}

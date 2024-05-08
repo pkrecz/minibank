@@ -1,0 +1,53 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div>
+
+    <div class="heading">
+        <h2>New customer</h2>
+    </div>
+
+    <form method="POST" class="custom_template">
+        {% csrf_token %}
+
+                   
+            <ul>
+                <li> {{ form.First_name.label_tag }} {{ form.First_name }} </li>
+                <li> {{ form.Last_name.label_tag }} {{ form.Last_name }} </li>
+            </ul>
+
+            <ul>
+                <li> {{ form.Address.label_tag }} {{ form.Address }} </li>
+                <li> {{ form.Postal_code.label_tag }} {{ form.Postal_code }} </li>
+                <li> {{ form.City.label_tag }} {{ form.City }} </li>
+            </ul>    
+
+            <ul>
+                <li> {{ form.Pesel.label_tag }} {{ form.Pesel }} </li>
+                <li> {{ form.Birth_date.label_tag }} {{ form.Birth_date }} </li>
+                <li> {{ form.Birth_city.label_tag }} {{ form.Birth_city }} </li>
+                <li> {{ form.Identification.label_tag }} {{ form.Identification }} </li>
+            </ul>
+
+        
+        <div>
+            {% for field in form %}
+                {{ field.errors }}
+            {% endfor %}
+        </div>
+
+        <div class="errorlist">
+            {{ error_message }}
+        </div>
+        
+
+        <p>
+		    <input type="submit" class="btn" value="Save">
+			<a href="{{request.META.HTTP_REFERER}}" class="btn btn_link">Back</a>
+		</p>
+
+    </form>
+</div>
+
+{% endblock %}

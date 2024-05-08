@@ -1,0 +1,29 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+  <h1>Logging in</h1>
+  
+  {% if form.errors %}
+    <p>User name or password are incorrect.</p>
+  {% else %}
+    <p>Please fill out form to log in</p>
+  {% endif %}
+
+  <div>
+
+    <form action="{% url 'minibankapp:login' %}" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="hidden" name="next" value="{{ next }}" />
+      <p><input type="submit" value="Log In"></p>
+    </form>
+
+    <p>
+      <a href="{% url 'minibankapp:password_reset' %}">Forgot Password ?</a>
+    </p>
+
+  </div>
+
+{% endblock %}
+

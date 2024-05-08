@@ -1,0 +1,78 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div>
+
+<div class="heading">
+
+  <h2>Account list customer: {{ pk_customer }}</h2>
+
+  <div style="display: inline-block;">
+    <a href="/minibank/newaccount/{{ pk_customer }}/"><button role="link" class="btn">New account</button></a>
+    <a href="/minibank/selectcustomer-account/"><button role="link" class="btn">Back to account list</button></a>
+  </div>
+
+  {% if is_paginated %}
+    <div style="float: right;">
+        <span>
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}"><button class="btn btn_page">&laquo; Previous</button></a>
+            {% endif %}
+                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span> 
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"><button class="btn btn_page">Next &raquo;</button></a>
+            {% endif %}
+        </span>
+    </div>
+  {% endif %}
+
+</div>
+
+<div class="outer-wrapper">
+
+<div class="table-wrapper"> 
+    <table class="cstable">
+          <thead>
+            <tr>
+                <th scope="all"> *** Action ***</th>
+                <th scope="all">Id account</th>
+                <th scope="all">IBAN number</th>
+                <th scope="all">Balance</th>
+                <th scope="all">Debit</th>
+                <th scope="all">Free balance</th>
+                <th scope="all">Percent</th>
+                <th scope="all">Created date</th>
+                <th scope="all">Created by</th>
+                <th scope="all">Account type</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for account in object_list %}
+            <tr>
+                <td>
+                  <a href="/minibank/updateaccount/{{ pk_customer }}/{{ account.Id_account }}/"><button role="link" class="btn_inside_table">Update</button></a>
+                  {% if not account.Number_IBAN %}               
+                    <a href="/minibank/generate/{{ pk_customer }}/{{ account.Id_account }}/"><button role="link" class="btn_inside_table btn_extra">Generate IBAN</button></a>
+                  {% endif %}
+                </td>
+                <td>{{ account.Id_account }}</td>
+                <td>{{ account.Number_IBAN }}</td>
+                <td>{{ account.Balance }}</td>
+                <td>{{ account.Debit }}</td>
+                <td>{{ account.Free_balance }}</td>
+                <td>{{ account.Percent }}</td>
+                <td>{{ account.Created_date }}</td>
+                <td>{{ account.Created_employee }}</td>
+                <td>{{ account.FK_Id_account_type_id }}</td>
+            </tr>
+            {% endfor %}
+ 
+          </tbody>
+
+      </table>
+</div>
+</div>
+</div>
+
+{% endblock %}

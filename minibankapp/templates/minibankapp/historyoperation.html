@@ -1,0 +1,65 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div>
+
+  <div class="heading">
+
+    <h2>History operation for account: {{ nr_iban }}</h2>
+  
+    <p style="display: inline-block;">
+      <a href="/minibank/selectaccount-history/{{ pk_customer }}/" style="margin-left: 0px" class="btn" >Back to account list</a>
+    </p>
+
+    {% if is_paginated %}
+      <div style="display: inline-block;">
+          <span>
+              {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}"><button class="btn btn_page">&laquo; Previous</button></a>
+              {% endif %}
+                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span> 
+              {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"><button class="btn btn_page">Next &raquo;</button></a>
+              {% endif %}
+          </span>
+      </div>
+    {% endif %}
+
+  </div>
+
+      <div class="outer-wrapper">
+
+      <div class="table-wrapper"> 
+          <table class="cstable">
+                <thead>
+                  <tr>
+                      <th scope="all">Id operation</th>
+                      <th scope="all">Type of operation</th>
+                      <th scope="all">Value operation</th>
+                      <th scope="all">Balance after operation</th>
+                      <th scope="all">Operation date </th>
+                      <th scope="all">Employee</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for account in object_list %}
+                  <tr>
+                      <td>{{ account.Id_operation }}</td>
+                      <td>{{ account.get_Type_operation_display }}</td>
+                      <td>{{ account.Value_operation }}</td>
+                      <td>{{ account.Balance_after_operation }}</td>
+                      <td>{{ account.Operation_date }}</td>
+                      <td>{{ account.Operation_employee }}</td>
+                  </tr>
+                  {% endfor %}
+       
+                </tbody>
+      
+            </table>
+      </div>
+      </div>
+
+</div>
+
+{% endblock %}

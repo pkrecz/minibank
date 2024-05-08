@@ -1,0 +1,7 @@
+*.pyc
+*~
+__pycache__
+minibankenv
+minibankdb
+/static
+.DS_Store

@@ -1,0 +1,48 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div>
+
+    <div class="heading">
+      <h2>Delete customer</h2>
+    </div>
+
+    <form method="post" class="custom_template">
+        {% csrf_token %}
+
+        <ul>
+            <li><strong>Id customer:</strong> {{ object.Id_customer }} </li>
+        </ul>
+
+        <ul>
+            <li><strong>First name:</strong> {{ object.First_name }} </li>
+            <li><strong>Last name:</strong> {{ object.Last_name }} </li>
+        </ul>
+  
+        <ul>
+            <li><strong>Address:</strong> {{ object.Address }} </li>
+            <li><strong>Postal code:</strong> {{ object.Postal_code }} </li>
+            <li><strong>City:</strong> {{ object.City }} </li>
+        </ul>
+
+        <ul>
+            <li> <strong>PESEL:</strong> {{ object.Pesel }} </li>
+            <li> <strong>Birth day:</strong> {{ object.Birth_date }} </li>
+            <li> <strong>Birth city:</strong> {{ object.Birth_city }} </li>
+            <li> <strong>Identification:</strong> {{ object.Identification }} </li>
+        </ul>
+
+        <p></p>
+        <p>Do you want to delete this customer ? </p>
+    
+        <p>
+			<input type="submit" class="btn" value="Delete">
+			<a href="/minibank/listcustomer/"class="btn" style="display: inline-block; margin-left: 10px; text-align: center;">Back to customer list</a>
+		</p>
+    
+    </form>
+
+</div>
+
+{% endblock %}

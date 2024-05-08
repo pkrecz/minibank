@@ -1,0 +1,27 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div>
+
+  <div class="heading">
+    <h2>Update account number IBAN: {{ Nr_IBAN }}</h2>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <table class="astable">
+      {{ form.as_table }}
+    </table>
+    
+    <p>
+	    <input type="submit" class="btn" value="Save">
+	    <a href="{{request.META.HTTP_REFERER}}" class="btn btn_link">Back</a>
+    </p>
+ 
+  </form>
+
+</div>
+
+{% endblock %}

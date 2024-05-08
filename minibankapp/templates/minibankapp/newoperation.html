@@ -1,0 +1,63 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div>
+
+  <div class="heading">
+    <h2>Operation for account IBAN: {{ nr_iban }}</h2>
+  </div>
+
+  <form method="post" class="custom_template">
+    {% csrf_token %}
+
+    <table class="panel">
+      <thead>
+
+        <tr>
+          <th scope="all">Free balance:</th>
+          <td> {{ free_balance }} PLN</td>
+        </tr>
+        
+        <tr>
+          <th scope="all">Balance:</th>
+          <td> {{ balance }} PLN</td>
+        </tr>
+
+        <tr>
+          <th scope="all">Debit:</th>
+          <td> {{ debit }} PLN </td>
+        </tr>
+
+      </thead>
+    </table>
+          
+    <ul>
+        <li>{{ form.Type_operation.label_tag }} <div class="template_widget">{{ form.Type_operation }}</div></li>
+    </ul>
+
+    <ul>
+        <li>{{ form.Value_operation.label_tag }} {{ form.Value_operation }}</li>
+    </ul>
+
+
+    <div>
+      {% for field in form %}
+          {{ field.errors }}
+      {% endfor %}
+    </div>
+
+    <div class="errorlist">
+      {{ error_message }}
+    </div>
+    
+    <p>
+			<input type="submit" class="btn" value="Save">
+			<a href="/minibank/selectaccount-operation/{{ pk_customer }}/" class="btn btn_link">Back to account list</a>
+		</p>
+ 
+  </form>
+
+</div>
+
+{% endblock %}

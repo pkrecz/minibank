@@ -1,0 +1,17 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div>
+
+    <div class="heading">
+        <h2>Error operation</h2>
+    </div>
+
+    <p>Description error:</p>
+    <p><strong> {{ error_message }} </strong></p>
+    <p><a href="{{request.META.HTTP_REFERER}}" class="btn btn_link" style="margin-left: 0;">Back</a></p>
+
+</div>
+
+{% endblock %}
