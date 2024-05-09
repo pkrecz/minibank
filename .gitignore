@@ -3,5 +3,7 @@
 __pycache__
 minibankenv
 minibankdb
+/static/
 settings.py
 .DS_Store
+.idea/
