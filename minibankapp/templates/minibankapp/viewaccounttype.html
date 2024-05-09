@@ -33,8 +33,8 @@
             {% for accounttype in object_list %}
             <tr>
                 <td>
-                  <a href="/minibank/updateaccounttype/{{ accounttype.Id_account_type }}/"><button role="link" class="btn_inside_table">Update</button></a>
-                  <a href="/minibank/deleteaccounttype/{{ accounttype.Id_account_type }}/"><button role="link" class="btn_inside_table">Delete</button></a>                
+                  <a href="/updateaccounttype/{{ accounttype.Id_account_type }}/"><button role="link" class="btn_inside_table">Update</button></a>
+                  <a href="/deleteaccounttype/{{ accounttype.Id_account_type }}/"><button role="link" class="btn_inside_table">Delete</button></a>                
                 </td>
                 <td>{{ accounttype.Id_account_type }}</td>
                 <td>{{ accounttype.Description }}</td>

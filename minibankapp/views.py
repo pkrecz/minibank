@@ -133,7 +133,7 @@ class CustomerDeleteView(LoginRequiredMixin, DeleteView):
         self.object = self.get_object()
         try:
             self.object.delete()
-            return redirect('/minibank/listcustomer/')
+            return redirect('/listcustomer/')
         except ProtectedError as error_description:
             return render(request,'minibankapp/error.html', {'error_message': error_description})
 
@@ -214,7 +214,7 @@ class AccountUpdateView(LoginRequiredMixin, UpdateView):
         return self.model.objects.get(pk=self.kwargs['account'])
 
     def get_success_url(self):
-        return f'/minibank/listaccount/{self.kwargs['customer']}/'
+        return f"/listaccount/{self.kwargs['customer']}/"
           
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -319,7 +319,7 @@ class AccountTypeDeleteView(LoginRequiredMixin, DeleteView):
         self.object = self.get_object()
         try:
             self.object.delete()
-            return redirect('/minibank/listaccounttype/')
+            return redirect('/listaccounttype/')
         except ProtectedError as error_description:
             return render(request,'minibankapp/error.html', {'error_message': error_description})
 
@@ -493,5 +493,4 @@ class HistoryOperationListView(LoginRequiredMixin, ListView):
         context['pk_customer'] = self.kwargs['customer']
         context['nr_iban'] = AccountModel.objects.get(pk=self.kwargs['account']).Number_IBAN
         return context
-    
-    
+     

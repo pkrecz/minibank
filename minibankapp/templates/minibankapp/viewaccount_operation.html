@@ -9,7 +9,7 @@
   <h2>Transaction - select acount for customer: {{ pk_customer }}</h2>
 
   <div style="display: inline-block;">
-    <a href="/minibank/selectcustomer-operation/"><button role="link" class="btn">Back to customer list</button></a>
+    <a href="/selectcustomer-operation/"><button role="link" class="btn">Back to customer list</button></a>
   </div>
 
   {% if is_paginated %}
@@ -47,7 +47,7 @@
           </thead>
           <tbody>
             {% for account in object_list %}
-            <tr onclick='location.href="/minibank/newoperation/{{ pk_customer }}/{{ account.Id_account }}/"'>
+            <tr onclick='location.href="/newoperation/{{ pk_customer }}/{{ account.Id_account }}/"'>
                 <td>{{ account.Id_account }}</td>
                 <td>{{ account.Number_IBAN }}</td>
                 <td>{{ account.Balance }}</td>

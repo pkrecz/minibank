@@ -52,7 +52,7 @@
           </thead>
           <tbody>
             {% for customer in object_list %}
-            <tr onclick='location.href="/minibank/listaccount/{{ customer.Id_customer }}/"'>
+            <tr onclick='location.href="/listaccount/{{ customer.Id_customer }}/"'>
                 <td>{{ customer.Id_customer }}</td>
                 <td>{{ customer.First_name }}</td>
                 <td>{{ customer.Last_name }}</td>

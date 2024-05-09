@@ -9,8 +9,8 @@
   <h2>Account list customer: {{ pk_customer }}</h2>
 
   <div style="display: inline-block;">
-    <a href="/minibank/newaccount/{{ pk_customer }}/"><button role="link" class="btn">New account</button></a>
-    <a href="/minibank/selectcustomer-account/"><button role="link" class="btn">Back to account list</button></a>
+    <a href="/newaccount/{{ pk_customer }}/"><button role="link" class="btn">New account</button></a>
+    <a href="/selectcustomer-account/"><button role="link" class="btn">Back to account list</button></a>
   </div>
 
   {% if is_paginated %}
@@ -51,9 +51,9 @@
             {% for account in object_list %}
             <tr>
                 <td>
-                  <a href="/minibank/updateaccount/{{ pk_customer }}/{{ account.Id_account }}/"><button role="link" class="btn_inside_table">Update</button></a>
+                  <a href="/updateaccount/{{ pk_customer }}/{{ account.Id_account }}/"><button role="link" class="btn_inside_table">Update</button></a>
                   {% if not account.Number_IBAN %}               
-                    <a href="/minibank/generate/{{ pk_customer }}/{{ account.Id_account }}/"><button role="link" class="btn_inside_table btn_extra">Generate IBAN</button></a>
+                    <a href="/generate/{{ pk_customer }}/{{ account.Id_account }}/"><button role="link" class="btn_inside_table btn_extra">Generate IBAN</button></a>
                   {% endif %}
                 </td>
                 <td>{{ account.Id_account }}</td>

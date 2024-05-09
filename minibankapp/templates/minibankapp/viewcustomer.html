@@ -53,10 +53,10 @@
           </thead>
           <tbody>
             {% for customer in object_list %}
-            <tr onclick='location.href="/minibank/updatecustomer/{{ customer.Id_customer }}/"'>
+            <tr onclick='location.href="/updatecustomer/{{ customer.Id_customer }}/"'>
                 <td>
-                  <a href="/minibank/updatecustomer/{{ customer.Id_customer }}/"><button role="link" class="btn_inside_table">Update</button></a>
-                  <a href="/minibank/deletecustomer/{{ customer.Id_customer }}/"><button role="link" class="btn_inside_table">Delete</button></a>                
+                  <a href="/updatecustomer/{{ customer.Id_customer }}/"><button role="link" class="btn_inside_table">Update</button></a>
+                  <a href="/deletecustomer/{{ customer.Id_customer }}/"><button role="link" class="btn_inside_table">Delete</button></a>                
                 </td>
                 <td>{{ customer.Id_customer }}</td>
                 <td>{{ customer.First_name }}</td>
