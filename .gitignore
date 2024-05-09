@@ -6,4 +6,4 @@ minibankdb
 /static/
 settings.py
 .DS_Store
-.idea/
+/.idea
