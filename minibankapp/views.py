@@ -475,7 +475,7 @@ class SelectAcountHistoryListView(LoginRequiredMixin, ListView):
 
 
 class HistoryOperationListView(LoginRequiredMixin, ListView):
-    """ List of transaction history for specific account """
+    """ List of transactions history for specific account """
 
     model = OperationModel
     template_name = 'minibankapp/historyoperation.html'
