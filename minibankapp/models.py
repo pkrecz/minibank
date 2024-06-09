@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-from django.core.validators import RegexValidator, MinValueValidator
+from django.core.validators import (RegexValidator, MinValueValidator)
 from django.core.exceptions import ValidationError
 
 
@@ -95,7 +95,7 @@ class AccountModel(models.Model):
 
     def clean(self):
         if self.Free_balance < 0:
-            raise ValidationError({'Free balance': ['Value operation out of limit.']})
+            raise ValidationError({'Free_balance': 'Value operation / Debit out of free balance limit.'})
 
 
 class AccountTypeModel(models.Model):

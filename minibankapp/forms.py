@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from .models import CustomerModel, AccountModel, OperationModel, AccountTypeModel, ParameterModel
+from .models import (CustomerModel, AccountModel, OperationModel, AccountTypeModel, ParameterModel)
 
 
 class IdAccountModelChoiceField(forms.ModelChoiceField):

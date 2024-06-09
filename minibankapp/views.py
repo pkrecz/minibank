@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import render, redirect
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import (LoginRequiredMixin, PermissionRequiredMixin)
 from django.contrib.auth.models import Permission
-from django.views.generic import View, CreateView, ListView, UpdateView, DeleteView
+from django.views.generic import (View, CreateView, ListView, UpdateView, DeleteView)
 from django.core.exceptions import ValidationError
 from django.db.utils import DataError
 from django.db import transaction
-from django.urls import reverse, reverse_lazy
+from django.urls import (reverse, reverse_lazy)
 from django.db.models import ProtectedError
 
 from .forms import (
@@ -17,7 +17,7 @@ from .forms import (
                     UpdateParameterForm,
                     CreateOperationForm)
 
-from .models import CustomerModel, AccountModel, OperationModel, AccountTypeModel, ParameterModel
+from .models import (CustomerModel, AccountModel, OperationModel, AccountTypeModel, ParameterModel)
 
 
 """ Custom Permission """
@@ -188,6 +188,7 @@ class AccountCreateView(LoginRequiredMixin, CreateView):
         instance.Created_employee = self.request.user
         instance.FK_Id_customer_id = self.kwargs['customer']
         try:
+            instance.Free_balance = instance.Debit
             instance.full_clean()
             instance.save()
             return redirect(reverse('minibankapp:listaccount', args=[self.kwargs['customer']]))
@@ -195,13 +196,13 @@ class AccountCreateView(LoginRequiredMixin, CreateView):
             return render(self.request, self.template_name, {
                                                             'form': form,
                                                             'pk_customer': self.kwargs['customer'], 
-                                                            'error_message': error_message})
+                                                            'error_message': error_message.messages[0]})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['pk_customer'] = self.kwargs['customer']
         return context
- 
+
     
 class AccountUpdateView(LoginRequiredMixin, UpdateView):
     """ Updating account """
@@ -220,15 +221,21 @@ class AccountUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['Nr_IBAN'] = self.model.objects.get(Id_account=self.kwargs['account']).Number_IBAN
         return context
-    
+   
     def form_valid(self, form):
         # Updating free balance based on debit
         instance = form.save(commit=False)
         var_balance = self.model.objects.get(Id_account=self.kwargs['account']).Balance
         instance.Free_balance = instance.Debit + var_balance
-        instance.full_clean()
-        instance.save()
+        try:
+            instance.full_clean()
+            instance.save()
+        except ValidationError as error_message:
+            return render(self.request, self.template_name, {
+                                                            'form': form,
+                                                            'error_message': error_message.messages[0]})
         return super().form_valid(form)
+
 
 class AccountGenerateUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """ Generating IBAN number """
@@ -241,20 +248,15 @@ class AccountGenerateUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Upd
         return self.model.objects.get(pk=self.kwargs['account'])
     
     def get(self, request, *args, **kwargs):
-        
         self.object = self.get_object()
-
         country_code = ParameterModel.objects.get().Country_code
         bank_number = ParameterModel.objects.get().Bank_number
         subaccount = AccountTypeModel.objects.get(Id_account_type=self.object.FK_Id_account_type.property_get_pk).Subaccount
-        
         customer = str(self.kwargs['customer'])
         account = str(self.kwargs['account'])
-
         prefix_zero = ''
         while len(customer) + len(account) + len(prefix_zero) < 12:
             prefix_zero = prefix_zero + '0'
-
         # Creating IBAN and save
         self.object.Number_IBAN = country_code + bank_number + subaccount + account + prefix_zero + customer
         try:
@@ -334,7 +336,6 @@ class OperationCreateView(LoginRequiredMixin, CreateView):
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-
         self.var_free_balance = AccountModel.objects.get(pk=self.kwargs['account']).Free_balance
         self.var_balance = AccountModel.objects.get(pk=self.kwargs['account']).Balance
         self.var_debit = AccountModel.objects.get(pk=self.kwargs['account']).Debit
@@ -353,19 +354,15 @@ class OperationCreateView(LoginRequiredMixin, CreateView):
             
             with transaction.atomic():
                 instance = form.save(commit=False)
-
                 # Operation type
                 if instance.Type_operation == 2:
                     instance.Value_operation = instance.Value_operation * (-1)
-                                             
                 # Set up balance after transaction
                 var_balance_after_operation = AccountModel.objects.get(pk=self.kwargs['account']).Balance + instance.Value_operation
                 instance.Balance_after_operation = var_balance_after_operation
-                
                 # Other data
                 instance.Operation_employee = self.request.user
                 instance.FK_Id_account_id = self.kwargs['account']
-
                 # Updating balance & free balance for AccountModel
                 var_free_balance_after_operation = var_balance_after_operation + self.var_debit
                 record = AccountModel.objects.get(pk=self.kwargs['account'])
@@ -493,4 +490,3 @@ class HistoryOperationListView(LoginRequiredMixin, ListView):
         context['pk_customer'] = self.kwargs['customer']
         context['nr_iban'] = AccountModel.objects.get(pk=self.kwargs['account']).Number_IBAN
         return context
-     

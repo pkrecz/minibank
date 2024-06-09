@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomerModel, AccountModel, OperationModel, AccountTypeModel, ParameterModel
+from .models import (CustomerModel, AccountModel, OperationModel, AccountTypeModel, ParameterModel)
 
 admin.site.register(CustomerModel)
 admin.site.register(AccountModel)
