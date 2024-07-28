@@ -267,6 +267,43 @@ class AccountGenerateUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Upd
             return render(request,'minibankapp/error.html', {'error_message': error_description})
 
 
+class AccountInterestUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    """ Interest counting """
+
+    permission_required = 'minibankapp.extended_role'
+
+    def get(self, request):
+        return render(request, 'minibankapp/interest_confirm.html')
+
+
+class AccountInterestExecuteUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    """ Interest counting - execute """
+
+    permission_required = 'minibankapp.extended_role'
+
+    def get(self, request):
+        data = AccountModel.objects.filter(Balance__gt = 0, Percent__gt = 0)
+        counter = 0
+        if data.exists():
+            with transaction.atomic():
+                for instance in data:
+                    interest = round(instance.Balance * (instance.Percent / 100),2)
+                    new_balance = instance.Balance + interest
+                    new_free_balance = new_balance + instance.Debit
+                    # Updating balance & free balance
+                    AccountModel.objects.filter(Id_account=instance.Id_account).update(Balance=new_balance, Free_balance=new_free_balance)
+                    # New object in OperationModel
+                    OperationModel.objects.create(
+                                                    Type_operation = 3,
+                                                    Value_operation = interest,
+                                                    Balance_after_operation = new_balance,
+                                                    Operation_employee = self.request.user,
+                                                    FK_Id_account = instance)
+                    counter += 1
+        msg = 'Interest for ' + str(counter) + ' account(s) has been recounted.'
+        return render(request, 'minibankapp/interest_done.html', {'msg': msg})
+
+
 """ AccountType """
 class AccountTypeCreateView(LoginRequiredMixin, CreateView):
     """ Creating new account type """

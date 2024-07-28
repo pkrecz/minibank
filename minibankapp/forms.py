@@ -131,12 +131,18 @@ class UpdateParameterForm(forms.ModelForm):
 class CreateOperationForm(forms.ModelForm):
     """ Form for new transaction """
 
+    type_choice = [
+                    ('', '--------'),
+                    (1, 'Deposit'),
+                    (2, 'Withdrawal')]
+
     Value_operation = forms.DecimalField(
                                 label='Value operation',
                                 initial=0,
                                 widget=forms.NumberInput(
                                 attrs={"class": "form_widget", "type": "number", "min": "0.01"}))
-    
+    Type_operation = forms.ChoiceField(choices=type_choice)
+
     class Meta:
         model = OperationModel
         exclude = ( 
