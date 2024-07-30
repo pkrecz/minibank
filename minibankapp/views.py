@@ -3,7 +3,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import (LoginRequiredMixin, PermissionRequiredMixin)
 from django.contrib.auth.models import Permission
-from django.views.generic import (View, CreateView, ListView, UpdateView, DeleteView)
+from django.views.generic import (View, CreateView, ListView, UpdateView, DeleteView, FormView)
 from django.core.exceptions import ValidationError
 from django.db.utils import DataError
 from django.db import transaction
@@ -267,21 +267,15 @@ class AccountGenerateUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Upd
             return render(request,'minibankapp/error.html', {'error_message': error_description})
 
 
-class AccountInterestUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class AccountInterestUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     """ Interest counting """
 
     permission_required = 'minibankapp.extended_role'
 
     def get(self, request):
         return render(request, 'minibankapp/interest_confirm.html')
-
-
-class AccountInterestExecuteUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    """ Interest counting - execute """
-
-    permission_required = 'minibankapp.extended_role'
-
-    def get(self, request):
+    
+    def post(self, request):
         data = AccountModel.objects.filter(Balance__gt = 0, Percent__gt = 0)
         counter = 0
         if data.exists():

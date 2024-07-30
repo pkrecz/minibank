@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from .views import (MainDasboard, ParameterUpdateView,
                     CustomerCreateView, CustomerListView, CustomerUpdateView, CustomerDeleteView, SelectCustomerAccountListView, CustomerCreateDoneView,
                     AccountTypeCreateView, AccountTypeListView, AccountTypeDeleteView, AccountTypeUpdateView,
-                    AccountListView, AccountCreateView, AccountUpdateView, AccountGenerateUpdateView, AccountInterestUpdateView, AccountInterestExecuteUpdateView,
+                    AccountListView, AccountCreateView, AccountUpdateView, AccountGenerateUpdateView, AccountInterestUpdateView,
                     OperationCreateView, SelectCustomerOperationListView, SelectAcountOperationListView,
                     SelectCustomerHistoryListView, SelectAcountHistoryListView, HistoryOperationListView)
 
@@ -34,7 +34,6 @@ urlpatterns = [
      path(route="updateaccount/<int:customer>/<int:account>/", view=AccountUpdateView.as_view(), name="updateaccount"),
      path(route="generate/<int:customer>/<int:account>/", view=AccountGenerateUpdateView.as_view(), name="generate"),
      path(route="interest/", view=AccountInterestUpdateView.as_view(), name="interest"),
-     path(route="interest-execute/", view=AccountInterestExecuteUpdateView.as_view(), name="interest_execute"),
 
      # Operation
      path(route="selectcustomer-operation/", view=SelectCustomerOperationListView.as_view(), name="selectcustomer_operation"),
