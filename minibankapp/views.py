@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import (LoginRequiredMixin, PermissionRequiredMixin)
 from django.contrib.auth.models import Permission
@@ -200,7 +201,12 @@ class AccountCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        dt = {}
+        instance = AccountTypeModel.objects.all().values_list('Id_account_type', 'Percent')
+        for i in instance:
+            dt[i[0]] = str(i[1])
         context['pk_customer'] = self.kwargs['customer']
+        context['dataJSON'] = json.dumps(dt)
         return context
 
     
@@ -276,24 +282,27 @@ class AccountInterestUpdateView(LoginRequiredMixin, PermissionRequiredMixin, For
         return render(request, 'minibankapp/interest_confirm.html')
     
     def post(self, request):
-        data = AccountModel.objects.filter(Balance__gt = 0, Percent__gt = 0)
         counter = 0
+        data = AccountModel.objects.filter(Balance__gt = 0, Percent__gt = 0)
         if data.exists():
-            with transaction.atomic():
-                for instance in data:
-                    interest = round(instance.Balance * (instance.Percent / 100),2)
-                    new_balance = instance.Balance + interest
-                    new_free_balance = new_balance + instance.Debit
-                    # Updating balance & free balance
-                    AccountModel.objects.filter(Id_account=instance.Id_account).update(Balance=new_balance, Free_balance=new_free_balance)
-                    # New object in OperationModel
-                    OperationModel.objects.create(
-                                                    Type_operation = 3,
-                                                    Value_operation = interest,
-                                                    Balance_after_operation = new_balance,
-                                                    Operation_employee = self.request.user,
-                                                    FK_Id_account = instance)
-                    counter += 1
+            try:
+                with transaction.atomic():
+                    for instance in data:
+                        interest = round(instance.Balance * (instance.Percent / 100),2)
+                        new_balance = instance.Balance + interest
+                        new_free_balance = new_balance + instance.Debit
+                        # Updating balance & free balance
+                        AccountModel.objects.filter(Id_account=instance.Id_account).update(Balance=new_balance, Free_balance=new_free_balance)
+                        # New object in OperationModel
+                        OperationModel.objects.create(
+                                                        Type_operation = 3,
+                                                        Value_operation = interest,
+                                                        Balance_after_operation = new_balance,
+                                                        Operation_employee = self.request.user,
+                                                        FK_Id_account = instance)
+                        counter += 1
+            except Exception as error_description:
+                return render(request,'minibankapp/error.html', {'error_message': error_description})
         msg = 'Interest for ' + str(counter) + ' account(s) has been recounted.'
         return render(request, 'minibankapp/interest_done.html', {'msg': msg})
 

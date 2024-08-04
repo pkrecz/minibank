@@ -1,6 +1,11 @@
 {% extends "main.html" %}
+{% load static %}
 
 {% block content %}
+
+<script src="{% static '/js/script.js' %}"></script>
+<script type="text/javascript">fillPercent()</script>
+<div style="display: none" id="jsonData" data-json="{{ dataJSON }}"></div>
 
 <div>
 

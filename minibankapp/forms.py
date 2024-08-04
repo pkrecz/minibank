@@ -16,10 +16,10 @@ class CustomerForm(forms.ModelForm):
 
     Birth_date = forms.DateField(
                                 label='Birth date',
+                                input_formats=["%Y-%m-%d"],
                                 widget=forms.DateInput(
                                 format="%Y-%m-%d",
-                                attrs={"type": "date", "class": "form_widget"}),
-                                input_formats=["%Y-%m-%d"])
+                                attrs={"type": "date", "class": "form_widget"}))
     Identification = forms.CharField(
                                 label='Identification',
                                 widget=forms.TextInput(
@@ -46,7 +46,8 @@ class NewAccountForm(forms.ModelForm):
     FK_Id_account_type = IdAccountModelChoiceField(
                                 label='Account type',
                                 queryset=AccountTypeModel.objects.all(),
-                                widget=forms.Select(attrs={"class": "form_widget"}))
+                                widget=forms.Select(
+                                attrs={"class": "form_widget"}))
     Percent = forms.DecimalField(
                                 label='Percent',
                                 initial=0,
@@ -56,7 +57,7 @@ class NewAccountForm(forms.ModelForm):
                                 label='Debit',
                                 initial=0,
                                 widget=forms.NumberInput(
-                                attrs={"class": "form_widget", "type": "number"}))
+                                attrs={"class": "form_widget"}))
 
     class Meta:
         model = AccountModel
@@ -74,7 +75,7 @@ class UpdateAccountForm(forms.ModelForm):
                                 label='Debit',
                                 initial=0,
                                 widget=forms.NumberInput(
-                                attrs={"class": "form_widget", "type": "number"}))
+                                attrs={"class": "form_widget"}))
 
     class Meta:
         model = AccountModel
@@ -140,7 +141,7 @@ class CreateOperationForm(forms.ModelForm):
                                 label='Value operation',
                                 initial=0,
                                 widget=forms.NumberInput(
-                                attrs={"class": "form_widget", "type": "number", "min": "0.01"}))
+                                attrs={"class": "form_widget", "min": "0.01"}))
     Type_operation = forms.ChoiceField(choices=type_choice)
 
     class Meta:
