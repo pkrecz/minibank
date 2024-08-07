@@ -35,9 +35,9 @@ class CustomerForm(forms.ModelForm):
     
     class Meta:
         model = CustomerModel
-        exclude = (
+        exclude = [
                     'Created_date',
-                    'Created_employee')
+                    'Created_employee']
 
 
 class NewAccountForm(forms.ModelForm):
@@ -61,7 +61,10 @@ class NewAccountForm(forms.ModelForm):
 
     class Meta:
         model = AccountModel
-        fields = ('FK_Id_account_type', 'Percent', 'Debit')
+        fields = [
+                    'FK_Id_account_type',
+                    'Percent',
+                    'Debit']
 
 
 class UpdateAccountForm(forms.ModelForm):
@@ -73,13 +76,14 @@ class UpdateAccountForm(forms.ModelForm):
                                 attrs={"class": "form_widget", "step": "0.1"}))
     Debit = forms.DecimalField(
                                 label='Debit',
-                                initial=0,
                                 widget=forms.NumberInput(
                                 attrs={"class": "form_widget"}))
 
     class Meta:
         model = AccountModel
-        fields = ('Percent','Debit')
+        fields = [
+                    'Percent',
+                    'Debit']
 
 
 class NewAccountTypeForm(forms.ModelForm):
@@ -118,7 +122,7 @@ class UpdateAccountTypeForm(forms.ModelForm):
     
     class Meta:
         model = AccountTypeModel
-        exclude = ('Id_account_type',)
+        exclude = ['Id_account_type']
 
 
 class UpdateParameterForm(forms.ModelForm):
@@ -126,7 +130,9 @@ class UpdateParameterForm(forms.ModelForm):
 
     class Meta:
         model = ParameterModel
-        fields = ('Country_code', 'Bank_number')
+        fields = [
+                    'Country_code',
+                    'Bank_number']
 
 
 class CreateOperationForm(forms.ModelForm):
@@ -146,10 +152,8 @@ class CreateOperationForm(forms.ModelForm):
 
     class Meta:
         model = OperationModel
-        exclude = ( 
+        exclude = [ 
                     'Balance_after_operation',
                     'Operation_date',
                     'Operation_employee',
-                    'FK_Id_account')
-
-
+                    'FK_Id_account']

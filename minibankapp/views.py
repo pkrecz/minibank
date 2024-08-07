@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import json
+import openpyxl
+import datetime
+from django.http.response import HttpResponse as HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import (LoginRequiredMixin, PermissionRequiredMixin)
 from django.contrib.auth.models import Permission
@@ -390,8 +393,8 @@ class OperationCreateView(LoginRequiredMixin, CreateView):
         context['pk_customer'] = self.kwargs['customer']
         return context
     
-    def form_valid(self, form):
-            
+    def form_valid(self, form):     
+        try:            
             with transaction.atomic():
                 instance = form.save(commit=False)
                 # Operation type
@@ -408,25 +411,24 @@ class OperationCreateView(LoginRequiredMixin, CreateView):
                 record = AccountModel.objects.get(pk=self.kwargs['account'])
                 record.Balance = var_balance_after_operation
                 record.Free_balance = var_free_balance_after_operation
-                try:
-                    record.full_clean()
-                    record.save()
-                    instance.full_clean()
-                    instance.save()
-                    return redirect(reverse('minibankapp:selectacount_operation', args=[self.kwargs['customer']]))
-                except ValidationError as error_message:
-                    self.var_free_balance = AccountModel.objects.get(pk=self.kwargs['account']).Free_balance
-                    for content in error_message:
-                        item = content[1]
-                        error_message = item[0]
-                    return render(self.request, self.template_name, {
-                                                                    'form': form,
-                                                                    'nr_iban': self.var_iban,
-                                                                    'pk_customer': self.kwargs['customer'],
-                                                                    'balance': self.var_balance,
-                                                                    'debit': self.var_debit,
-                                                                    'free_balance': self.var_free_balance,
-                                                                    'error_message': error_message})
+                record.full_clean()
+                record.save()
+                instance.full_clean()
+                instance.save()
+                return redirect(reverse('minibankapp:selectacount_operation', args=[self.kwargs['customer']]))
+        except ValidationError as error_message:
+            self.var_free_balance = AccountModel.objects.get(pk=self.kwargs['account']).Free_balance
+            for content in error_message:
+                item = content[1]
+                error_message = item[0]
+            return render(self.request, self.template_name, {
+                                                                'form': form,
+                                                                'nr_iban': self.var_iban,
+                                                                'pk_customer': self.kwargs['customer'],
+                                                                'balance': self.var_balance,
+                                                                'debit': self.var_debit,
+                                                                'free_balance': self.var_free_balance,
+                                                                'error_message': error_message})
 
     def form_invalid(self, form):
         for field in form.errors:
@@ -528,5 +530,42 @@ class HistoryOperationListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['pk_customer'] = self.kwargs['customer']
+        context['id_account'] = self.kwargs['account']
         context['nr_iban'] = AccountModel.objects.get(pk=self.kwargs['account']).Number_IBAN
         return context
+
+
+class HistoryExportListView(LoginRequiredMixin, ListView):
+    """ Export of transactions history for specific account """
+    
+    def get(self, request, *args, **kwargs):
+        fields = [
+                    'Id_operation',
+                    'Type_operation',
+                    'Value_operation',
+                    'Balance_after_operation',
+                    'Operation_date']
+        data = OperationModel.objects.filter(FK_Id_account=self.kwargs['account']).order_by('-Operation_date').values_list(*fields)
+        file_name = 'History_operations.xlsx'
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename={file_name}'
+        workbook = openpyxl.Workbook()
+        workbook.iso_dates = True
+        worksheet = workbook.active
+        worksheet.title = 'Operations'
+        headers = [
+                    'Id operation',
+                    'Typ of operation',
+                    'Value operation',
+                    'Balance after operation',
+                    'Operation date']
+        for column_number, column_title in enumerate(headers, 1):
+            worksheet.cell(row=1, column=column_number).value = column_title
+        for row_number, row in enumerate(data, 1):
+            for column_number, cell_value in enumerate(row, 1):
+                if type(cell_value) is datetime.datetime:
+                    cell_value = cell_value.replace(tzinfo=None)
+                worksheet.cell(row=row_number+1, column=column_number).value = cell_value
+        workbook.save(response)
+        return response
+             

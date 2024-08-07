@@ -8,7 +8,7 @@ from .views import (MainDasboard, ParameterUpdateView,
                     AccountTypeCreateView, AccountTypeListView, AccountTypeDeleteView, AccountTypeUpdateView,
                     AccountListView, AccountCreateView, AccountUpdateView, AccountGenerateUpdateView, AccountInterestUpdateView,
                     OperationCreateView, SelectCustomerOperationListView, SelectAcountOperationListView,
-                    SelectCustomerHistoryListView, SelectAcountHistoryListView, HistoryOperationListView)
+                    SelectCustomerHistoryListView, SelectAcountHistoryListView, HistoryOperationListView, HistoryExportListView)
 
 
 app_name = "minibankapp"
@@ -44,6 +44,7 @@ urlpatterns = [
      path(route="selectcustomer-history/", view=SelectCustomerHistoryListView.as_view(), name="selectcustomer_history"),
      path(route="selectaccount-history/<int:customer>/", view=SelectAcountHistoryListView.as_view(), name="selectacount_history"),
      path(route="historyoperation/<int:customer>/<int:account>/", view=HistoryOperationListView.as_view(), name="historyoperation"),
+     path(route="historyexport/<int:account>/", view=HistoryExportListView.as_view(), name="historyexport"),
 
      # AccountType
      path(route="newaccounttype/", view=AccountTypeCreateView.as_view(), name="newaccounttype"),

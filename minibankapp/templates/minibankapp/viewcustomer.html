@@ -10,8 +10,7 @@
 
   <form action="{% url 'minibankapp:listcustomer' %}" style="display: inline-block;">
     <input type="text" placeholder="PESEL or Identification" name="criteria" style="margin-top: 5px;">
-      <button type="submit" class="btn">Search</button>
-    </input>
+    <button type="submit" class="btn">Search</button>
   </form>
 
   {% if is_paginated %}
@@ -55,7 +54,7 @@
           </thead>
           <tbody>
             {% for customer in object_list %}
-            <tr onclick='location.href="/updatecustomer/{{ customer.Id_customer }}/"'>
+            <tr>
                 <td>
                   <a href="/updatecustomer/{{ customer.Id_customer }}/"><button role="link" class="btn_inside_table">Update</button></a>
                   <a href="/deletecustomer/{{ customer.Id_customer }}/"><button role="link" class="btn_inside_table">Delete</button></a>                
