@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import json
-import openpyxl
 import datetime
+import decimal
+from openpyxl import Workbook
+from openpyxl.styles import (Border, Side, PatternFill, Font)
 from django.http.response import HttpResponse as HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import (LoginRequiredMixin, PermissionRequiredMixin)
@@ -34,6 +36,21 @@ class CustomPermission(Permission):
             ("extended_role", "Extended role"))
 
 
+""" Select customer """
+class SelectCustomerListView(ListView):
+    
+    def get_queryset_customer(self, criteria):
+        criterias = self.request.GET.get(criteria)
+        Pesel_results = CustomerModel.objects.filter(Pesel__startswith=criterias).order_by('-pk')
+        Identification_results = CustomerModel.objects.filter(Identification__istartswith=criterias).order_by('-pk')
+        if Pesel_results.exists():
+            return Pesel_results
+        elif Identification_results.exists():
+            return Identification_results
+        else:
+            return CustomerModel.objects.none()
+
+
 """ Dashboard """
 class MainDasboard(LoginRequiredMixin, View):
 
@@ -45,13 +62,12 @@ class MainDasboard(LoginRequiredMixin, View):
 class ParameterUpdateView(LoginRequiredMixin, UpdateView):
     """ Changing system data """
 
-    model = ParameterModel
     form_class = UpdateParameterForm
     template_name = 'minibankapp/updateparameter.html'
     success_url = reverse_lazy('minibankapp:dashboard')
 
     def get_object(self):
-        return self.model.objects.get()
+        return ParameterModel.objects.get()
     
 
 """ Customer """
@@ -86,37 +102,28 @@ class CustomerCreateDoneView(LoginRequiredMixin, View):
         return render(request, 'minibankapp/newcustomer_done.html', {'pk': self.kwargs['customer']})
 
 
-class CustomerListView(LoginRequiredMixin, ListView):
+class CustomerListView(LoginRequiredMixin, SelectCustomerListView):
     """ List of customer """
 
-    model = CustomerModel
     template_name = 'minibankapp/viewcustomer.html'
     paginate_by = 10
 
     def get_queryset(self):
         if self.request.GET.get('criteria'):
-            criterias = self.request.GET.get('criteria')
-            Pesel_results = self.model.objects.filter(Pesel__startswith=criterias).order_by('-pk')
-            Identification_results = self.model.objects.filter(Identification__istartswith=criterias).order_by('-pk')
-            if Pesel_results.exists():
-                return Pesel_results
-            elif Identification_results.exists():
-                return Identification_results
-            else:
-                return self.model.objects.none()
-        return self.model.objects.filter().order_by('-pk')
+            return self.get_queryset_customer('criteria')
+        else:
+            return CustomerModel.objects.filter().order_by('-pk')
 
 
 class CustomerUpdateView(LoginRequiredMixin, UpdateView):
     """ Updating customer data """
 
-    model = CustomerModel
     form_class = CustomerForm
     template_name = 'minibankapp/updatecustomer.html'
     success_url = reverse_lazy('minibankapp:listcustomer')
 
     def get_object(self):
-        return self.model.objects.get(pk=self.kwargs['customer'])
+        return CustomerModel.objects.get(pk=self.kwargs['customer'])
     
     def form_invalid(self, form):
         for field in form.errors:
@@ -127,11 +134,10 @@ class CustomerUpdateView(LoginRequiredMixin, UpdateView):
 class CustomerDeleteView(LoginRequiredMixin, DeleteView):
     """ Deletion of customer """
 
-    model = CustomerModel
     template_name = 'minibankapp/deletecustomer.html'
     
     def get_object(self):
-        return self.model.objects.get(pk=self.kwargs['customer'])
+        return CustomerModel.objects.get(pk=self.kwargs['customer'])
     
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -142,38 +148,31 @@ class CustomerDeleteView(LoginRequiredMixin, DeleteView):
             return render(request,'minibankapp/error.html', {'error_message': error_description})
 
 
-class SelectCustomerAccountListView(LoginRequiredMixin, ListView):
+class SelectCustomerAccountListView(LoginRequiredMixin, SelectCustomerListView):
     """ Selection customer for listing accounts """
 
-    model = CustomerModel
     template_name = 'minibankapp/selectcustomer_account.html'
     paginate_by = 10
 
     def get_queryset(self):
         if self.request.GET.get('criteria'):
-            criterias = self.request.GET.get('criteria')
-            Pesel_results = self.model.objects.filter(Pesel__startswith=criterias).order_by('-pk')
-            Identification_results = self.model.objects.filter(Identification__istartswith=criterias).order_by('-pk')
-            if Pesel_results.exists():
-                return Pesel_results
-            elif Identification_results.exists():
-                return Identification_results
-        return self.model.objects.none()
+            return self.get_queryset_customer('criteria')
+        else:
+            return CustomerModel.objects.filter().order_by('-pk')
 
 
 """ Account """
 class AccountListView(LoginRequiredMixin, ListView):
     """ List of accounts """
 
-    model = AccountModel
     template_name = 'minibankapp/viewaccount.html'
 
     def get_queryset(self):
-        results = self.model.objects.filter(FK_Id_customer=self.kwargs['customer']).order_by('-pk')
+        results = AccountModel.objects.filter(FK_Id_customer=self.kwargs['customer']).order_by('-pk')
         if results.exists():
             return results
         else:
-            return self.model.objects.none()
+            return AccountModel.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -216,25 +215,24 @@ class AccountCreateView(LoginRequiredMixin, CreateView):
 class AccountUpdateView(LoginRequiredMixin, UpdateView):
     """ Updating account """
 
-    model = AccountModel
     form_class = UpdateAccountForm
     template_name = 'minibankapp/updateaccount.html'
 
     def get_object(self):
-        return self.model.objects.get(pk=self.kwargs['account'])
+        return AccountModel.objects.get(pk=self.kwargs['account'])
 
     def get_success_url(self):
         return f"/listaccount/{self.kwargs['customer']}/"
           
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['Nr_IBAN'] = self.model.objects.get(Id_account=self.kwargs['account']).Number_IBAN
+        context['Nr_IBAN'] = AccountModel.objects.get(Id_account=self.kwargs['account']).Number_IBAN
         return context
    
     def form_valid(self, form):
         # Updating free balance based on debit
         instance = form.save(commit=False)
-        var_balance = self.model.objects.get(Id_account=self.kwargs['account']).Balance
+        var_balance = AccountModel.objects.get(Id_account=self.kwargs['account']).Balance
         instance.Free_balance = instance.Debit + var_balance
         try:
             instance.full_clean()
@@ -250,11 +248,9 @@ class AccountGenerateUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Upd
     """ Generating IBAN number """
 
     permission_required = 'minibankapp.extended_role'
-    model = AccountModel
-    fields = '__all__'
 
     def get_object(self):
-        return self.model.objects.get(pk=self.kwargs['account'])
+        return AccountModel.objects.get(pk=self.kwargs['account'])
     
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -322,39 +318,35 @@ class AccountTypeCreateView(LoginRequiredMixin, CreateView):
 class AccountTypeListView(LoginRequiredMixin, ListView):
     """ List of accounts type """
 
-    model = AccountTypeModel
     template_name = 'minibankapp/viewaccounttype.html'
 
     def get_queryset(self):
         if self.request.GET.get('criteria'):
             criterias = self.request.GET.get('criteria')
-            results = self.model.objects.filter(Id_account_type__istartswith=criterias).order_by('-pk')
+            results = AccountTypeModel.objects.filter(Id_account_type__istartswith=criterias).order_by('-pk')
             if results.exists():
                 return results
             else:
-                return self.model.objects.none()
-        return self.model.objects.filter().order_by('-pk')
+                return AccountTypeModel.objects.none()
+        return AccountTypeModel.objects.filter().order_by('-pk')
 
 
 class AccountTypeUpdateView(LoginRequiredMixin, UpdateView):
     """ Updating account type """
 
-    model = AccountTypeModel
     form_class = UpdateAccountTypeForm
     template_name = 'minibankapp/updateaccounttype.html'
     success_url = reverse_lazy('minibankapp:listaccounttype')
 
     def get_object(self):
-        return self.model.objects.get(pk=self.kwargs['accounttype'])
+        return AccountTypeModel.objects.get(pk=self.kwargs['accounttype'])
 
 
 class AccountTypeDeleteView(LoginRequiredMixin, DeleteView):
     """ Deletion of account type """
 
-    model = AccountTypeModel
-
     def get_object(self):
-        return self.model.objects.get(pk=self.kwargs['accounttype'])
+        return AccountTypeModel.objects.get(pk=self.kwargs['accounttype'])
 
     # Without confirmation
     def get(self, request, *args, **kwargs):
@@ -373,7 +365,6 @@ class AccountTypeDeleteView(LoginRequiredMixin, DeleteView):
 class OperationCreateView(LoginRequiredMixin, CreateView):
     """ New operation for account """
 
-    model = OperationModel 
     form_class = CreateOperationForm
     template_name = 'minibankapp/newoperation.html'
 
@@ -436,37 +427,30 @@ class OperationCreateView(LoginRequiredMixin, CreateView):
         return super().form_invalid(form)
 
 
-class SelectCustomerOperationListView(LoginRequiredMixin, ListView):
+class SelectCustomerOperationListView(LoginRequiredMixin, SelectCustomerListView):
     """ Selection customer to perform transaction """
 
-    model = CustomerModel
     template_name = 'minibankapp/selectcustomer_operation.html'
     paginate_by = 10
 
     def get_queryset(self):
         if self.request.GET.get('criteria'):
-            criterias = self.request.GET.get('criteria')
-            Pesel_results = self.model.objects.filter(Pesel__startswith=criterias).order_by('-pk')
-            Identification_results = self.model.objects.filter(Identification__istartswith=criterias).order_by('-pk')
-            if Pesel_results.exists():
-                return Pesel_results
-            elif Identification_results.exists():
-                return Identification_results
-        return self.model.objects.none()
+            return self.get_queryset_customer('criteria')
+        else:
+            return CustomerModel.objects.filter().order_by('-pk')
 
 
 class SelectAcountOperationListView(LoginRequiredMixin, ListView):
     """ Selection account to perform transaction """
 
-    model = AccountModel
     template_name = 'minibankapp/viewaccount_operation.html'
 
     def get_queryset(self):
-        results = self.model.objects.filter(FK_Id_customer=self.kwargs['customer']).order_by('-pk')
+        results = AccountModel.objects.filter(FK_Id_customer=self.kwargs['customer']).order_by('-pk')
         if results.exists():
             return results
         else:
-            return self.model.objects.none()
+            return AccountModel.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -475,37 +459,30 @@ class SelectAcountOperationListView(LoginRequiredMixin, ListView):
 
 
 """ History """
-class SelectCustomerHistoryListView(LoginRequiredMixin, ListView):
+class SelectCustomerHistoryListView(LoginRequiredMixin, SelectCustomerListView):
     """ Selection customer to list transaction history """
 
-    model = CustomerModel
     template_name = 'minibankapp/selectcustomer_history.html'
     paginate_by = 10
 
     def get_queryset(self):
         if self.request.GET.get('criteria'):
-            criterias = self.request.GET.get('criteria')
-            Pesel_results = self.model.objects.filter(Pesel__startswith=criterias).order_by('-pk')
-            Identification_results = self.model.objects.filter(Identification__istartswith=criterias).order_by('-pk')
-            if Pesel_results.exists():
-                return Pesel_results
-            elif Identification_results.exists():
-                return Identification_results
-        return self.model.objects.none()
-    
+            return self.get_queryset_customer('criteria')
+        else:
+            return CustomerModel.objects.filter().order_by('-pk')
+
 
 class SelectAcountHistoryListView(LoginRequiredMixin, ListView):
     """ Selection account to list transaction history """
 
-    model = AccountModel
     template_name = 'minibankapp/viewaccount_history.html'
 
     def get_queryset(self):
-        results = self.model.objects.filter(FK_Id_customer=self.kwargs['customer']).order_by('-pk')
+        results = AccountModel.objects.filter(FK_Id_customer=self.kwargs['customer']).order_by('-pk')
         if results.exists():
             return results
         else:
-            return self.model.objects.none()
+            return AccountModel.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -516,16 +493,15 @@ class SelectAcountHistoryListView(LoginRequiredMixin, ListView):
 class HistoryOperationListView(LoginRequiredMixin, ListView):
     """ List of transactions history for specific account """
 
-    model = OperationModel
     template_name = 'minibankapp/historyoperation.html'
     paginate_by = 10
 
     def get_queryset(self):
-        results = self.model.objects.filter(FK_Id_account=self.kwargs['account']).order_by('-Operation_date')
+        results = OperationModel.objects.filter(FK_Id_account=self.kwargs['account']).order_by('-Operation_date')
         if results.exists():
             return results
         else:
-            return self.model.objects.none()
+            return OperationModel.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -537,8 +513,11 @@ class HistoryOperationListView(LoginRequiredMixin, ListView):
 
 class HistoryExportListView(LoginRequiredMixin, ListView):
     """ Export of transactions history for specific account """
-    
+
     def get(self, request, *args, **kwargs):
+        side = Side(style='dashed', color='FF000000')
+        border_around = Border(left=side, right=side, top=side, bottom=side)
+        file_name = 'History_operations.xlsx'
         fields = [
                     'Id_operation',
                     'Type_operation',
@@ -546,13 +525,13 @@ class HistoryExportListView(LoginRequiredMixin, ListView):
                     'Balance_after_operation',
                     'Operation_date']
         data = OperationModel.objects.filter(FK_Id_account=self.kwargs['account']).order_by('-Operation_date').values_list(*fields)
-        file_name = 'History_operations.xlsx'
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = f'attachment; filename={file_name}'
-        workbook = openpyxl.Workbook()
+        workbook = Workbook()
         workbook.iso_dates = True
         worksheet = workbook.active
         worksheet.title = 'Operations'
+        # Column headers
         headers = [
                     'Id operation',
                     'Typ of operation',
@@ -560,12 +539,34 @@ class HistoryExportListView(LoginRequiredMixin, ListView):
                     'Balance after operation',
                     'Operation date']
         for column_number, column_title in enumerate(headers, 1):
-            worksheet.cell(row=1, column=column_number).value = column_title
+            cell = worksheet.cell(row=1, column=column_number)
+            cell.value = column_title
+            cell.font = Font(bold=True, italic=True)
+            cell.fill = PatternFill(fgColor='0000FFFF', fill_type='solid')
+            cell.border = border_around
+        # Cell data
         for row_number, row in enumerate(data, 1):
             for column_number, cell_value in enumerate(row, 1):
                 if type(cell_value) is datetime.datetime:
                     cell_value = cell_value.replace(tzinfo=None)
-                worksheet.cell(row=row_number+1, column=column_number).value = cell_value
+                    cell_value = cell_value.strftime('%d.%m.%Y %H:%M:%S')
+                if column_number == 2:
+                    match cell_value:
+                        case 1:
+                            cell_value = 'Deposit'
+                        case 2:
+                            cell_value = 'Withdrawal'
+                        case 3:
+                            cell_value = 'Interest'
+                cell = worksheet.cell(row=row_number+1, column=column_number)
+                cell.value = cell_value
+                cell.border = border_around
+                if type(cell_value) is decimal.Decimal:
+                    cell.number_format = '#,##0.00'
+        # AutoFit column width
+        for column in worksheet.columns:
+            max_length = max(len(str(cell.value)) for cell in column)
+            adjusted_width = (max_length + 2) * 1.1
+            worksheet.column_dimensions[column[0].column_letter].width = adjusted_width
         workbook.save(response)
         return response
-             
