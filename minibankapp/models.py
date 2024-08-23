@@ -2,11 +2,11 @@
 
 from django.db import models
 from django.core.validators import (RegexValidator, MinValueValidator)
-from django.core.exceptions import ValidationError
+from .validators import (validator_free_balance, validator_number_iban)
 
 
+""" Customer Model """
 class CustomerModel(models.Model):
-    """ Customer Model """
 
     Id_customer = models.AutoField(
                                 primary_key=True,
@@ -58,8 +58,8 @@ class CustomerModel(models.Model):
         super().save(*args, **kwargs)
 
 
+""" Account Model """
 class AccountModel(models.Model):
-    """ Account Model """
 
     Id_account = models.AutoField(
                                 primary_key=True,
@@ -67,6 +67,7 @@ class AccountModel(models.Model):
     Number_IBAN = models.CharField(
                                 max_length=28,
                                 blank=True,
+                                validators=[validator_number_iban],
                                 verbose_name='IBAN number')
     Balance = models.DecimalField(
                                 max_digits=12,
@@ -83,6 +84,7 @@ class AccountModel(models.Model):
                                 max_digits=12,
                                 decimal_places=2,
                                 default=0,
+                                validators=[validator_free_balance],
                                 verbose_name='Free balance')
     Percent = models.DecimalField(
                                 max_digits=4,
@@ -100,13 +102,9 @@ class AccountModel(models.Model):
     FK_Id_account_type = models.ForeignKey('minibankapp.AccountTypeModel', on_delete=models.PROTECT)
     FK_Id_customer = models.ForeignKey('minibankapp.CustomerModel', on_delete=models.PROTECT)
 
-    def clean(self):
-        if self.Free_balance < 0:
-            raise ValidationError({'Free_balance': 'Value operation / Debit out of free balance limit.'})
 
-
+""" AccountType Model """
 class AccountTypeModel(models.Model):
-    """ AccountType Model """
 
     Id_account_type = models.CharField(
                                 primary_key=True,
@@ -136,8 +134,8 @@ class AccountTypeModel(models.Model):
         return self.Id_account_type
 
 
+""" Parameter Model """
 class ParameterModel(models.Model):
-    """ Parameter Model """
 
     Id_parameter = models.AutoField(
                                 primary_key=True)
@@ -153,8 +151,8 @@ class ParameterModel(models.Model):
         super().save(*args, **kwargs)
 
 
+""" Operation Model """
 class OperationModel(models.Model):
-    """ Operation Model """
 
     type_choice = [
                     ('', '--------'),
@@ -185,4 +183,3 @@ class OperationModel(models.Model):
                                 verbose_name='Employee')
     
     FK_Id_account = models.ForeignKey('minibankapp.AccountModel', on_delete=models.PROTECT)
-    

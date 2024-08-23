@@ -4,15 +4,14 @@ from django import forms
 from .models import (CustomerModel, AccountModel, OperationModel, AccountTypeModel, ParameterModel)
 
 
+""" Customized field for new account form"""
 class IdAccountModelChoiceField(forms.ModelChoiceField):
-    """ Customized field for new account form"""
 
     def label_from_instance(self, object):
         return object.Id_account_type + ' - ' + object.Description
 
 
 class CustomerForm(forms.ModelForm):
-    """ Customer form """
 
     Birth_date = forms.DateField(
                                 label='Birth date',
@@ -41,7 +40,6 @@ class CustomerForm(forms.ModelForm):
 
 
 class NewAccountForm(forms.ModelForm):
-    """ Form new account """
 
     FK_Id_account_type = IdAccountModelChoiceField(
                                 label='Account type',
@@ -52,7 +50,7 @@ class NewAccountForm(forms.ModelForm):
                                 label='Percent',
                                 initial=0,
                                 widget=forms.NumberInput(
-                                attrs={"class": "form_widget", "step": "0.1"}))
+                                attrs={"class": "form_widget", "step": "0.01"}))
     Debit = forms.DecimalField(
                                 label='Debit',
                                 initial=0,
@@ -68,12 +66,11 @@ class NewAccountForm(forms.ModelForm):
 
 
 class UpdateAccountForm(forms.ModelForm):
-    """ Form for changing account parameter """
 
     Percent = forms.DecimalField(
                                 label='Percent',
                                 widget=forms.NumberInput(
-                                attrs={"class": "form_widget", "step": "0.1"}))
+                                attrs={"class": "form_widget", "step": "0.01"}))
     Debit = forms.DecimalField(
                                 label='Debit',
                                 widget=forms.NumberInput(
@@ -87,7 +84,6 @@ class UpdateAccountForm(forms.ModelForm):
 
 
 class NewAccountTypeForm(forms.ModelForm):
-    """ Form for creating new account type """
 
     Id_account_type = forms.CharField(
                                 label='Id account type',
@@ -101,7 +97,7 @@ class NewAccountTypeForm(forms.ModelForm):
                                 label='Percent',
                                 initial=0,
                                 widget=forms.NumberInput(
-                                attrs={"class": "form_widget", "step": "0.1"}))
+                                attrs={"class": "form_widget", "step": "0.01"}))
     
     class Meta:
         model = AccountTypeModel
@@ -109,7 +105,6 @@ class NewAccountTypeForm(forms.ModelForm):
 
 
 class UpdateAccountTypeForm(forms.ModelForm):
-    """ Form for updating account type data """
         
     Subaccount = forms.CharField(
                                 label='Subaccount',
@@ -118,7 +113,7 @@ class UpdateAccountTypeForm(forms.ModelForm):
     Percent = forms.DecimalField(
                                 label='Percent',
                                 widget=forms.NumberInput(
-                                attrs={"class": "form_widget", "step": "0.1"}))
+                                attrs={"class": "form_widget", "step": "0.01"}))
     
     class Meta:
         model = AccountTypeModel
@@ -126,7 +121,6 @@ class UpdateAccountTypeForm(forms.ModelForm):
 
 
 class UpdateParameterForm(forms.ModelForm):
-    """ Form for changing system data """
 
     class Meta:
         model = ParameterModel
@@ -136,7 +130,6 @@ class UpdateParameterForm(forms.ModelForm):
 
 
 class CreateOperationForm(forms.ModelForm):
-    """ Form for new transaction """
 
     type_choice = [
                     ('', '--------'),

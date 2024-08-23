@@ -15,7 +15,6 @@ from django.db.utils import DataError
 from django.db import transaction
 from django.urls import (reverse, reverse_lazy)
 from django.db.models import ProtectedError
-
 from .forms import (
                     CustomerForm,
                     NewAccountTypeForm, UpdateAccountTypeForm,
@@ -24,6 +23,7 @@ from .forms import (
                     CreateOperationForm)
 
 from .models import (CustomerModel, AccountModel, OperationModel, AccountTypeModel, ParameterModel)
+from .functions import SelectCustomerListView
 
 
 """ Custom Permission """
@@ -36,21 +36,6 @@ class CustomPermission(Permission):
             ("extended_role", "Extended role"))
 
 
-""" Select customer """
-class SelectCustomerListView(ListView):
-    
-    def get_queryset_customer(self, criteria):
-        criterias = self.request.GET.get(criteria)
-        Pesel_results = CustomerModel.objects.filter(Pesel__startswith=criterias).order_by('-pk')
-        Identification_results = CustomerModel.objects.filter(Identification__istartswith=criterias).order_by('-pk')
-        if Pesel_results.exists():
-            return Pesel_results
-        elif Identification_results.exists():
-            return Identification_results
-        else:
-            return CustomerModel.objects.none()
-
-
 """ Dashboard """
 class MainDasboard(LoginRequiredMixin, View):
 
@@ -60,8 +45,6 @@ class MainDasboard(LoginRequiredMixin, View):
 
 """ Parameter """
 class ParameterUpdateView(LoginRequiredMixin, UpdateView):
-    """ Changing system data """
-
     form_class = UpdateParameterForm
     template_name = 'minibankapp/updateparameter.html'
     success_url = reverse_lazy('minibankapp:dashboard')
@@ -72,8 +55,6 @@ class ParameterUpdateView(LoginRequiredMixin, UpdateView):
 
 """ Customer """
 class CustomerCreateView(LoginRequiredMixin, CreateView):
-    """ Creation new customer """
-
     form_class = CustomerForm
     template_name = 'minibankapp/newcustomer.html'
     
@@ -96,15 +77,12 @@ class CustomerCreateView(LoginRequiredMixin, CreateView):
 
 
 class CustomerCreateDoneView(LoginRequiredMixin, View):
-    """ Message after newly created customer """
 
     def get(self, request, *args, **kwargs):
         return render(request, 'minibankapp/newcustomer_done.html', {'pk': self.kwargs['customer']})
 
 
 class CustomerListView(LoginRequiredMixin, SelectCustomerListView):
-    """ List of customer """
-
     template_name = 'minibankapp/viewcustomer.html'
     paginate_by = 10
 
@@ -116,8 +94,6 @@ class CustomerListView(LoginRequiredMixin, SelectCustomerListView):
 
 
 class CustomerUpdateView(LoginRequiredMixin, UpdateView):
-    """ Updating customer data """
-
     form_class = CustomerForm
     template_name = 'minibankapp/updatecustomer.html'
     success_url = reverse_lazy('minibankapp:listcustomer')
@@ -132,8 +108,6 @@ class CustomerUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class CustomerDeleteView(LoginRequiredMixin, DeleteView):
-    """ Deletion of customer """
-
     template_name = 'minibankapp/deletecustomer.html'
     
     def get_object(self):
@@ -149,8 +123,6 @@ class CustomerDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class SelectCustomerAccountListView(LoginRequiredMixin, SelectCustomerListView):
-    """ Selection customer for listing accounts """
-
     template_name = 'minibankapp/selectcustomer_account.html'
     paginate_by = 10
 
@@ -163,8 +135,6 @@ class SelectCustomerAccountListView(LoginRequiredMixin, SelectCustomerListView):
 
 """ Account """
 class AccountListView(LoginRequiredMixin, ListView):
-    """ List of accounts """
-
     template_name = 'minibankapp/viewaccount.html'
 
     def get_queryset(self):
@@ -181,8 +151,6 @@ class AccountListView(LoginRequiredMixin, ListView):
 
 
 class AccountCreateView(LoginRequiredMixin, CreateView):
-    """ Creating new account """
-
     form_class = NewAccountForm
     template_name = 'minibankapp/newaccount.html'
 
@@ -213,8 +181,6 @@ class AccountCreateView(LoginRequiredMixin, CreateView):
 
     
 class AccountUpdateView(LoginRequiredMixin, UpdateView):
-    """ Updating account """
-
     form_class = UpdateAccountForm
     template_name = 'minibankapp/updateaccount.html'
 
@@ -244,9 +210,8 @@ class AccountUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
+""" Generating IBAN number """
 class AccountGenerateUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    """ Generating IBAN number """
-
     permission_required = 'minibankapp.extended_role'
 
     def get_object(self):
@@ -272,9 +237,8 @@ class AccountGenerateUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Upd
             return render(request,'minibankapp/error.html', {'error_message': error_description})
 
 
+""" Interest counting """
 class AccountInterestUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
-    """ Interest counting """
-
     permission_required = 'minibankapp.extended_role'
 
     def get(self, request):
@@ -308,16 +272,12 @@ class AccountInterestUpdateView(LoginRequiredMixin, PermissionRequiredMixin, For
 
 """ AccountType """
 class AccountTypeCreateView(LoginRequiredMixin, CreateView):
-    """ Creating new account type """
-
     form_class = NewAccountTypeForm
     template_name = 'minibankapp/newaccounttype.html'
     success_url = reverse_lazy('minibankapp:listaccounttype')
 
 
 class AccountTypeListView(LoginRequiredMixin, ListView):
-    """ List of accounts type """
-
     template_name = 'minibankapp/viewaccounttype.html'
 
     def get_queryset(self):
@@ -332,8 +292,6 @@ class AccountTypeListView(LoginRequiredMixin, ListView):
 
 
 class AccountTypeUpdateView(LoginRequiredMixin, UpdateView):
-    """ Updating account type """
-
     form_class = UpdateAccountTypeForm
     template_name = 'minibankapp/updateaccounttype.html'
     success_url = reverse_lazy('minibankapp:listaccounttype')
@@ -343,7 +301,6 @@ class AccountTypeUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class AccountTypeDeleteView(LoginRequiredMixin, DeleteView):
-    """ Deletion of account type """
 
     def get_object(self):
         return AccountTypeModel.objects.get(pk=self.kwargs['accounttype'])
@@ -363,8 +320,6 @@ class AccountTypeDeleteView(LoginRequiredMixin, DeleteView):
 
 """ Operation """
 class OperationCreateView(LoginRequiredMixin, CreateView):
-    """ New operation for account """
-
     form_class = CreateOperationForm
     template_name = 'minibankapp/newoperation.html'
 
@@ -428,8 +383,6 @@ class OperationCreateView(LoginRequiredMixin, CreateView):
 
 
 class SelectCustomerOperationListView(LoginRequiredMixin, SelectCustomerListView):
-    """ Selection customer to perform transaction """
-
     template_name = 'minibankapp/selectcustomer_operation.html'
     paginate_by = 10
 
@@ -441,8 +394,6 @@ class SelectCustomerOperationListView(LoginRequiredMixin, SelectCustomerListView
 
 
 class SelectAcountOperationListView(LoginRequiredMixin, ListView):
-    """ Selection account to perform transaction """
-
     template_name = 'minibankapp/viewaccount_operation.html'
 
     def get_queryset(self):
@@ -460,8 +411,6 @@ class SelectAcountOperationListView(LoginRequiredMixin, ListView):
 
 """ History """
 class SelectCustomerHistoryListView(LoginRequiredMixin, SelectCustomerListView):
-    """ Selection customer to list transaction history """
-
     template_name = 'minibankapp/selectcustomer_history.html'
     paginate_by = 10
 
@@ -473,8 +422,6 @@ class SelectCustomerHistoryListView(LoginRequiredMixin, SelectCustomerListView):
 
 
 class SelectAcountHistoryListView(LoginRequiredMixin, ListView):
-    """ Selection account to list transaction history """
-
     template_name = 'minibankapp/viewaccount_history.html'
 
     def get_queryset(self):
@@ -491,8 +438,6 @@ class SelectAcountHistoryListView(LoginRequiredMixin, ListView):
 
 
 class HistoryOperationListView(LoginRequiredMixin, ListView):
-    """ List of transactions history for specific account """
-
     template_name = 'minibankapp/historyoperation.html'
     paginate_by = 10
 
@@ -512,7 +457,6 @@ class HistoryOperationListView(LoginRequiredMixin, ListView):
 
 
 class HistoryExportListView(LoginRequiredMixin, ListView):
-    """ Export of transactions history for specific account """
 
     def get(self, request, *args, **kwargs):
         side = Side(style='dashed', color='FF000000')
