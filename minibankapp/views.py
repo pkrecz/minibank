@@ -5,8 +5,9 @@ import datetime
 import decimal
 from openpyxl import Workbook
 from openpyxl.styles import (Border, Side, PatternFill, Font)
-from django.http.response import HttpResponse as HttpResponse
+from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import (LoginRequiredMixin, PermissionRequiredMixin)
 from django.contrib.auth.models import Permission
 from django.views.generic import (View, CreateView, ListView, UpdateView, DeleteView, FormView)
@@ -24,6 +25,7 @@ from .forms import (
 
 from .models import (CustomerModel, AccountModel, OperationModel, AccountTypeModel, ParameterModel)
 from .functions import SelectCustomerListView
+from .decorators import ActivityMonitoringClass
 
 
 """ Custom Permission """
@@ -194,9 +196,8 @@ class AccountUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['Nr_IBAN'] = AccountModel.objects.get(Id_account=self.kwargs['account']).Number_IBAN
         return context
-   
+
     def form_valid(self, form):
-        # Updating free balance based on debit
         instance = form.save(commit=False)
         var_balance = AccountModel.objects.get(Id_account=self.kwargs['account']).Balance
         instance.Free_balance = instance.Debit + var_balance
@@ -216,7 +217,7 @@ class AccountGenerateUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Upd
 
     def get_object(self):
         return AccountModel.objects.get(pk=self.kwargs['account'])
-    
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         country_code = ParameterModel.objects.get().Country_code
@@ -238,12 +239,13 @@ class AccountGenerateUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Upd
 
 
 """ Interest counting """
+@method_decorator(ActivityMonitoringClass(), name='post')
 class AccountInterestUpdateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     permission_required = 'minibankapp.extended_role'
 
     def get(self, request):
         return render(request, 'minibankapp/interest_confirm.html')
-    
+
     def post(self, request):
         counter = 0
         data = AccountModel.objects.filter(Balance__gt = 0, Percent__gt = 0)
@@ -251,7 +253,7 @@ class AccountInterestUpdateView(LoginRequiredMixin, PermissionRequiredMixin, For
             try:
                 with transaction.atomic():
                     for instance in data:
-                        interest = round(instance.Balance * (instance.Percent / 100),2)
+                        interest = round(instance.Balance * (instance.Percent / 100), 2)
                         new_balance = instance.Balance + interest
                         new_free_balance = new_balance + instance.Debit
                         # Updating balance & free balance
@@ -319,6 +321,7 @@ class AccountTypeDeleteView(LoginRequiredMixin, DeleteView):
 
 
 """ Operation """
+@method_decorator(ActivityMonitoringClass(), name='post')
 class OperationCreateView(LoginRequiredMixin, CreateView):
     form_class = CreateOperationForm
     template_name = 'minibankapp/newoperation.html'
@@ -338,7 +341,7 @@ class OperationCreateView(LoginRequiredMixin, CreateView):
         context['nr_iban'] = self.var_iban
         context['pk_customer'] = self.kwargs['customer']
         return context
-    
+
     def form_valid(self, form):     
         try:            
             with transaction.atomic():
@@ -361,7 +364,7 @@ class OperationCreateView(LoginRequiredMixin, CreateView):
                 record.save()
                 instance.full_clean()
                 instance.save()
-                return redirect(reverse('minibankapp:selectacount_operation', args=[self.kwargs['customer']]))
+                return redirect(reverse('minibankapp:selectaccount_operation', args=[self.kwargs['customer']]))
         except ValidationError as error_message:
             self.var_free_balance = AccountModel.objects.get(pk=self.kwargs['account']).Free_balance
             for content in error_message:

@@ -37,12 +37,12 @@ urlpatterns = [
 
      # Operation
      path(route="selectcustomer-operation/", view=SelectCustomerOperationListView.as_view(), name="selectcustomer_operation"),
-     path(route="selectaccount-operation/<int:customer>/", view=SelectAcountOperationListView.as_view(), name="selectacount_operation"),
+     path(route="selectaccount-operation/<int:customer>/", view=SelectAcountOperationListView.as_view(), name="selectaccount_operation"),
      path(route="newoperation/<int:customer>/<int:account>/", view=OperationCreateView.as_view(), name="newoperation"),
 
      # History
      path(route="selectcustomer-history/", view=SelectCustomerHistoryListView.as_view(), name="selectcustomer_history"),
-     path(route="selectaccount-history/<int:customer>/", view=SelectAcountHistoryListView.as_view(), name="selectacount_history"),
+     path(route="selectaccount-history/<int:customer>/", view=SelectAcountHistoryListView.as_view(), name="selectaccount_history"),
      path(route="historyoperation/<int:customer>/<int:account>/", view=HistoryOperationListView.as_view(), name="historyoperation"),
      path(route="historyexport/<int:account>/", view=HistoryExportListView.as_view(), name="historyexport"),
 
