@@ -3,7 +3,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
-from .views import (MainDasboard, ParameterUpdateView,
+from .views import (MainDasboard, ParameterUpdateView, MonitoringListView,
                     CustomerCreateView, CustomerListView, CustomerUpdateView, CustomerDeleteView, SelectCustomerAccountListView, CustomerCreateDoneView,
                     AccountTypeCreateView, AccountTypeListView, AccountTypeDeleteView, AccountTypeUpdateView,
                     AccountListView, AccountCreateView, AccountUpdateView, AccountGenerateUpdateView, AccountInterestUpdateView,
@@ -17,8 +17,9 @@ urlpatterns = [
      # Dashboard
      path(route="", view=MainDasboard.as_view(), name="dashboard"),
 
-     # Parameter
+     # Parameter & monitoring
      path(route="updateparameter/", view=ParameterUpdateView.as_view(), name="updateparameter"),
+     path(route="monitoring/", view=MonitoringListView.as_view(), name="monitoring"),
 
      # Customer
      path(route="newcustomer/", view=CustomerCreateView.as_view(), name="newcustomer"),

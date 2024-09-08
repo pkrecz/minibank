@@ -187,22 +187,22 @@ class OperationModel(models.Model):
 
 """ Log Model """
 class LogModel(models.Model):
-    
-    id_log = models.AutoField(
+
+    Id_log = models.AutoField(
                                 primary_key=True)
-    date_log = models.DateTimeField(
+    Date_log = models.DateTimeField(
                                 auto_now_add=True)
-    action_log = models.CharField(
+    Action_log = models.CharField(
                                 max_length=50)
-    function_log = models.CharField(
+    Function_log = models.CharField(
                                 max_length=50)
-    duration_log = models.DecimalField(
+    Duration_log = models.DecimalField(
                                 max_digits=12,
                                 decimal_places=6)
-    data_log = models.CharField(
+    Data_log = models.CharField(
                                 max_length=250,
                                 blank=True)
-    user_log = models.CharField(
+    User_log = models.CharField(
                                 max_length=50)
-    status_log = models.CharField(
+    Status_log = models.CharField(
                                 max_length=20)

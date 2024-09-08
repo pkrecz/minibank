@@ -23,7 +23,7 @@ from .forms import (
                     UpdateParameterForm,
                     CreateOperationForm)
 
-from .models import (CustomerModel, AccountModel, OperationModel, AccountTypeModel, ParameterModel)
+from .models import (CustomerModel, AccountModel, OperationModel, AccountTypeModel, ParameterModel, LogModel)
 from .functions import SelectCustomerListView
 from .decorators import ActivityMonitoringClass
 
@@ -517,3 +517,11 @@ class HistoryExportListView(LoginRequiredMixin, ListView):
             worksheet.column_dimensions[column[0].column_letter].width = adjusted_width
         workbook.save(response)
         return response
+
+
+""" Monitoring """
+class MonitoringListView(LoginRequiredMixin, ListView):
+    permission_required = 'minibankapp.extended_role'
+    queryset = LogModel.objects.all().order_by('-Date_log')
+    template_name = 'minibankapp/monitoring.html'
+    paginate_by = 10

@@ -30,12 +30,12 @@ class ActivityMonitoringClass:
                 duration = 0
                 status_log = 'Failed'
             new_log = LogModel()
-            new_log.action_log = action
-            new_log.function_log = function
-            new_log.duration_log = duration
-            new_log.data_log = data_log[:250]
-            new_log.user_log = user_log
-            new_log.status_log = status_log
+            new_log.Action_log = action
+            new_log.Function_log = function
+            new_log.Duration_log = duration
+            new_log.Data_log = data_log[:250]
+            new_log.User_log = user_log
+            new_log.Status_log = status_log
             new_log.save()
             return result    
         return wrapper

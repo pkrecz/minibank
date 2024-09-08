@@ -1,0 +1,63 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div>
+
+<div class="heading">
+
+  <h2>Activity monitoring</h2>
+
+  {% if is_paginated %}
+    <div>
+        <span>
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}"><button class="btn btn_page">&laquo; Previous</button></a>
+            {% endif %}
+                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span> 
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"><button class="btn btn_page">Next &raquo;</button></a>
+            {% endif %}
+        </span>
+    </div>
+  {% endif %}
+
+</div>
+
+<div class="outer-wrapper">
+
+<div class="table-wrapper"> 
+    <table class="cstable">
+          <thead>
+            <tr>
+                <th scope="all">Id</th>
+                <th scope="all">Date</th>
+                <th scope="all">Action</th>
+                <th scope="all">Function</th>
+                <th scope="all">Duration</th>
+                <th scope="all">Data</th>
+                <th scope="all">User</th>
+                <th scope="all">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for monitor in object_list %}
+                <td>{{ monitor.Id_log }}</td>
+                <td>{{ monitor.Date_log }}</td>
+                <td>{{ monitor.Action_log }}</td>
+                <td>{{ monitor.Function_log }}</td>
+                <td>{{ monitor.Duration_log }}</td>
+                <td>{{ monitor.Data_log }}</td>
+                <td>{{ monitor.User_log }}</td>
+                <td>{{ monitor.Status_log }}</td>
+            </tr>
+            {% endfor %}
+ 
+          </tbody>
+
+      </table>
+</div>
+</div>
+</div>
+
+{% endblock %}
